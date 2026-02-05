@@ -202,8 +202,18 @@
             color: #ff6b6b;
         }
         @media (max-width: 520px) {
-            .columns { gap: 16px; padding: 0 8px; max-width: 100%; }
-            .column { width: calc(50% - 8px); font-size: 0.8rem; }
+            .columns { 
+                gap: 12px; 
+                padding: 0; 
+                max-width: 100%; 
+                width: 100%;
+                justify-content: center;
+            }
+            .column { 
+                width: calc(50% - 6px); 
+                max-width: calc(50% - 6px);
+                font-size: 0.8rem; 
+            }
         }
 
         /* Финальная сцена: медленное затемнение, Кись.. и я люблю тебя.. + мутная анимация сердца */
