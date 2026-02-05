@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's</title>
+    <style>
+        body {
+            margin: 0; padding: 0; background: #000000; color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden; transition: opacity 3s ease;
+        }
+        #container { width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; z-index: 2; }
+        #scene2 { display: none; width: 100%; text-align: center; }
+        
+        #intro-text { font-size: 1.2rem; margin-bottom: 20px; min-height: 24px; color: #aaa; }
+
+        #scene2-video-wrap {
+            display: flex; flex-direction: column; align-items: center; margin-top: 24px;
+            width: 100%; max-width: 95%; margin-left: auto; margin-right: auto;
+        }
+        #scene2-video-wrap video {
+            width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px;
+            pointer-events: none;
+        }
+
+        #scene1 { position: relative; }
+        .main-photo {
+            position: absolute; left: 50%; transform: translateX(-50%); top: 24px;
+            width: 80px; height: 80px; object-fit: cover; border-radius: 12px;
+        }
+        #scene1 .question { margin-top: 116px; }
+
+        .question {
+            font-size: 1.8rem; font-weight: 300; letter-spacing: 0.15em;
+            color: #8b000080; margin-bottom: 32px; text-align: center;
+            text-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+        }
+
+        .btn-wrap { display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
+
+        .btn-yes-wrap { position: relative; overflow: visible; }
+        .btn-yes-wrap .btn { position: relative; z-index: 1; }
+        .drip {
+            position: absolute; left: 50%; bottom: -13px;
+            width: 12px; height: 11px; margin-left: -6px;
+            background: radial-gradient(circle at 50% 30%, #8b000080, #8b0000);
+            /* скруглённое сердечко: плавные кривые, мягкий низ */
+            clip-path: path('M 6 10 C 3 8 0 5.5 0 3.2 C 0 1 1.2 0 3 0 C 4.2 0 5.5 1 6 2.2 C 6.5 1 7.8 0 9 0 C 10.8 0 12 1 12 3.2 C 12 5.5 9 8 6 10 Z');
+            pointer-events: none; z-index: 0;
+            transform-origin: 50% 0%;
+            box-shadow: 0 0 6px #8b000080;
+        }
+        .drip:nth-child(1) { left: 25%; animation: bloodDrip 4s ease-in-out infinite; }
+        .drip:nth-child(2) { left: 50%; animation: bloodDrip 4s ease-in-out infinite 1.3s; }
+        .drip:nth-child(3) { left: 75%; animation: bloodDrip 4s ease-in-out infinite 2.6s; }
+
+        @keyframes bloodDrip {
+            0% { transform: translateY(0) scale(0.2); opacity: 0.6; }
+            25% { transform: translateY(0) scale(0.9); opacity: 1; }
+            35% { transform: translateY(0) scale(1); opacity: 1; }
+            45% { transform: translateY(6px) scale(1.05); opacity: 1; }
+            60% { transform: translateY(18px) scale(0.95); opacity: 0.95; }
+            80% { transform: translateY(35px) scale(0.7); opacity: 0.5; }
+            100% { transform: translateY(55px) scale(0.3); opacity: 0; }
+        }
+
+        .btn {
+            padding: 15px 30px; font-size: 1.2rem; background: #8b000080;
+            color: #000; border: none; border-radius: 50px; cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .btn-yes-wrap .btn { background: linear-gradient(180deg, #8b000080 0%,#8b000080 100%); }
+        .btn:hover { transform: scale(1.05); }
+
+        .btn-no {
+            background: #0c0c0c; color: #000;
+        }
+        .btn-no:hover { background: #555; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px) rotate(-1deg); }
+            20%, 40%, 60%, 80% { transform: translateX(4px) rotate(1deg); }
+        }
+        @keyframes tremble {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-1px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            75% { transform: translate(1px, 1px); }
+        }
+        .btn-no { animation: tremble 0.15s ease-in-out infinite; }
+        .btn-no.shake { animation: shake 0.4s ease-in-out; }
+
+        #blur-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            backdrop-filter: blur(0px); transition: backdrop-filter 2s ease; z-index: 1;
+        }
+
+        /* Сцена при нажатии No: видео по центру, надпись ниже */
+        #sceneNo {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10; background: #000; gap: 24px;
+        }
+        #sceneNo video {
+            max-width: 90%; max-height: 70vh; object-fit: contain; pointer-events: none;
+        }
+        #sceneNo-text {
+            min-height: 2.5em; padding: 0 20px;
+        }
+        #sceneNo-text .question {
+            margin: 0;
+        }
+
+        /* После видео: плавное затемнение до полного чёрного, потом вопрос и кнопка */
+        #scene2-after {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            flex-direction: column; justify-content: center; align-items: center;
+            z-index: 5; gap: 28px; opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+        #scene2-after.fully-dark { opacity: 1; }
+        #scene2-after .question { margin: 0; padding: 0 20px; }
+        #scene2-after .btn { font-size: 1.3rem; padding: 16px 36px; color: #000; }
+        #btnAlways { display: none; }
+        #scene2-after #btnAlways.visible { display: inline-block; }
+
+        /* Фон: анимация сердечек (без мутности) */
+        #heart-animation-wrap {
+            display: none; position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+            opacity: 1;
+        }
+        #heart-animation-wrap canvas {
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            background: transparent;
+        }
+
+        /* 4 колонки — 100 причин по центру, скролл от браузера */
+        #scene2-reasons {
+            display: none; width: 100%; flex-direction: column; align-items: center;
+            justify-content: flex-start; position: relative; z-index: 2; padding: 20px 0;
+            box-sizing: border-box;
+        }
+        #scene2-reasons .reasons-title {
+            font-size: 1.6rem; font-weight: 300; letter-spacing: 0.12em;
+            color: #ff6b6b; margin-bottom: 28px; text-align: center;
+            text-shadow: 0 0 18px rgba(255, 77, 77, 0.35);
+        }
+        .columns {
+            display: flex; justify-content: center; gap: 32px; width: auto;
+            margin: 0 auto; flex-wrap: wrap;
+        }
+        .column {
+            width: 140px; text-align: left; font-size: 0.9rem; line-height: 1.2;
+            color: #ff6b6b;
+        }
+
+        /* Финальная сцена: медленное затемнение, Кись.. и я люблю тебя.. */
+        #scene-final {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 20; opacity: 0; transition: opacity 1.2s ease;
+        }
+        #scene-final.fully-dark { opacity: 1; }
+        #scene-final .question { margin: 0; padding: 0 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="blur-overlay"></div>
+
+    <!-- Музыка после видео (подставь свой файл в src) -->
+    <audio id="afterVideoMusic" preload="auto">
+        <!-- Подставь свою музыку: src="music.mp3" -->
+        <source src="love.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Сцена при нажатии No: видео и надпись ниже -->
+    <div id="sceneNo">
+        <video id="noVideo" playsinline>
+            <source src="1.mp4" type="video/mp4">
+        </video>
+        <div id="sceneNo-text">
+            <p class="question" id="noPityText"></p>
+        </div>
+    </div>
+
+    <div id="container">
+        <div id="scene1">
+            <img id="mainPhoto" class="main-photo" src="k.jpg" alt="">
+            <p class="question" id="mainQuestion"></p>
+            <div class="btn-wrap">
+                <div class="btn-yes-wrap">
+                <span class="drip"></span><span class="drip"></span><span class="drip"></span>
+                <button class="btn" onclick="startSequence()">yes</button>
+            </div>
+                <button class="btn btn-no" id="btnNo" onmouseenter="shakeNo()" onclick="playNoScene()">no</button>
+            </div>
+        </div>
+
+        <div id="scene2">
+            <div id="intro-text"></div>
+            <div id="scene2-video-wrap">
+                <video id="scene2Video" playsinline>
+                    <source src="2.mp4" type="video/mp4">
+                </video>
+            </div>
+            <!-- После нажатия Always: 4 колонки со 100 причинами -->
+            <div id="scene2-reasons">
+                <p class="reasons-title">100 причин почему именно ты</p>
+                <div class="columns" id="scroll-area">
+                    <div id="col1" class="column"></div>
+                    <div id="col2" class="column"></div>
+                    <div id="col3" class="column"></div>
+                    <div id="col4" class="column"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Анимация сердечек на фоне (показывается при Always) -->
+    <div id="heart-animation-wrap">
+        <canvas id="heartCanvas"></canvas>
+    </div>
+
+    <!-- Финальная сцена после 4 колонок: затемнение, Кись.. и я люблю тебя.. -->
+    <div id="scene-final">
+        <p class="question" id="finalText"></p>
+    </div>
+
+    <!-- Затемнённый экран после видео: вопрос на русском + Always (кнопка после печати) -->
+    <div id="scene2-after">
+        <p class="question" id="scene2Question"></p>
+        <button class="btn" id="btnAlways" onclick="startReasons()">always</button>
+    </div>
+
+    <script>
+        function shakeNo() {
+            const btn = document.getElementById('btnNo');
+            btn.classList.add('shake');
+            setTimeout(() => btn.classList.remove('shake'), 500);
+        }
+
+        function playNoScene() {
+            document.getElementById('container').style.display = 'none';
+            const sceneNo = document.getElementById('sceneNo');
+            const video = document.getElementById('noVideo');
+            sceneNo.style.display = 'flex';
+
+            document.getElementById('noPityText').innerHTML = '';
+            typeSingleSentence('Жаль...', 'noPityText');
+            video.play().catch(function() {});
+        }
+
+        // 100 уникальных причин почему именно ты (без повторов)
+        var allReasons = [
+            "милый", "добрый", "нежный", "заботливый", "умный", "красивый", "весёлый", "надёжный",
+            "честный", "ласковый", "внимательный", "тёплый", "искренний", "терпеливый", "щедрый", "верный",
+            "любящий", "родной", "особенный", "лучший", "идеальный", "драгоценный", "солнечный", "забавный",
+            "остроумный", "талантливый", "чуткий", "отзывчивый", "благородный", "мужественный", "преданный",
+            "открытый", "душевный", "неповторимый", "единственный", "понимающий", "романтичный", "смешной",
+            "загадочный", "непредсказуемый", "сильный", "мечтательный", "решительный", "спокойный", "страстный",
+            "творческий", "мудрый", "лёгкий", "искромётный", "обаятельный", "грациозный", "яркий", "прямой",
+            "чувственный", "галантный", "рыцарский", "мягкий", "настоящий", "живой", "редкий", "ценный",
+            "любимый", "желанный", "нужный", "важный", "главный", "смелый", "независимый", "целеустремлённый",
+            "добродушный", "лучезарный", "притягательный", "неотразимый", "поддерживающий", "вдохновляющий",
+            "защитник", "опора", "друг", "партнёр", "вдохновение", "смысл", "радость", "счастье",
+            "мечта", "реальность", "бесценный", "незабываемый", "исключительный", "уникальный", "необычный",
+            "волшебный", "сказочный", "прекрасный", "изумительный", "восхитительный", "очаровательный",
+            "магнетический", "чарующий", "пленительный", "скромный", "великодушный", "бескорыстный",
+            "тактичный", "деликатный", "проницательный", "эрудированный", "находчивый", "оптимистичный",
+            "жизнерадостный", "задушевный", "сердечный", "трепетный", "неземной", "редчайший",
+            "уникальный", "необычный"
+        ];
+        allReasons = Array.from(new Set(allReasons)).slice(0, 100);
+
+        async function startSequence() {
+            document.getElementById('scene1').style.display = 'none';
+            document.getElementById('scene2').style.display = 'block';
+            document.getElementById('blur-overlay').style.backdropFilter = "blur(15px)";
+
+            var scene2Video = document.getElementById('scene2Video');
+            if (scene2Video.querySelector('source').src) {
+                scene2Video.muted = false;
+                scene2Video.play().catch(function() {});
+            }
+            scene2Video.onended = showAfterVideo;
+
+            await typeSingleSentence("что я чувствую рядом с тобой", "intro-text");
+        }
+
+        async function showAfterVideo() {
+            var overlay = document.getElementById('scene2-after');
+            var music = document.getElementById('afterVideoMusic');
+            var btnAlways = document.getElementById('btnAlways');
+            btnAlways.classList.remove('visible');
+            document.getElementById('scene2Question').innerHTML = '';
+            overlay.style.display = 'flex';
+            overlay.classList.remove('fully-dark');
+            overlay.offsetHeight;
+            requestAnimationFrame(function() {
+                overlay.classList.add('fully-dark');
+            });
+            await new Promise(function(r) { setTimeout(r, 1300); });
+            if (music.querySelector('source').src) {
+                music.currentTime = 0;
+                music.play().catch(function() {});
+            }
+            await typeSingleSentence('Кись', 'scene2Question');
+            await new Promise(function(r) { setTimeout(r, 3500); });
+            await typeAppend(', ты готов идти со мной дальше?', 'scene2Question', 18);
+            btnAlways.classList.add('visible');
+        }
+
+        function typeAppend(text, elementId, delayMs) {
+            return new Promise(function(resolve) {
+                var el = document.getElementById(elementId);
+                var i = 0;
+                function step() {
+                    if (i < text.length) {
+                        el.innerHTML += text[i++];
+                        setTimeout(step, delayMs);
+                    } else resolve();
+                }
+                step();
+            });
+        }
+
+        var heartAnimationLoaded = false;
+        function initHeartAnimation() {
+            if (heartAnimationLoaded) return;
+            heartAnimationLoaded = true;
+            var canvas = document.getElementById('heartCanvas');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var width = canvas.width = innerWidth;
+            var height = canvas.height = innerHeight;
+            var rand = Math.random;
+            ctx.fillStyle = 'rgba(0,0,0,1)';
+            ctx.fillRect(0, 0, width, height);
+            var heartPosition = function(rad) {
+                return [Math.pow(Math.sin(rad), 3), -(15 * Math.cos(rad) - 5 * Math.cos(2 * rad) - 2 * Math.cos(3 * rad) - Math.cos(4 * rad))];
+            };
+            var scaleAndTranslate = function(pos, sx, sy, dx, dy) {
+                return [dx + pos[0] * sx, dy + pos[1] * sy];
+            };
+            var traceCount = 50;
+            var pointsOrigin = [];
+            var dr = 0.1;
+            for (var i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 210, 13, 0, 0));
+            for (i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 150, 9, 0, 0));
+            for (i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 90, 5, 0, 0));
+            var heartPointsCount = pointsOrigin.length;
+            var targetPoints = [];
+            var pulse = function(kx, ky) {
+                for (i = 0; i < pointsOrigin.length; i++) {
+                    targetPoints[i] = [];
+                    targetPoints[i][0] = kx * pointsOrigin[i][0] + width / 2;
+                    targetPoints[i][1] = ky * pointsOrigin[i][1] + height / 2;
+                }
+            };
+            var e = [];
+            for (i = 0; i < heartPointsCount; i++) {
+                var x = rand() * width;
+                var y = rand() * height;
+                e[i] = {
+                    vx: 0, vy: 0, R: 2, speed: rand() + 5, q: ~~(rand() * heartPointsCount),
+                    D: 2 * (i % 2) - 1, force: 0.2 * rand() + 0.7,
+                    f: 'hsla(0,' + ~~(40 * rand() + 60) + '%,' + ~~(60 * rand() + 20) + '%,.3)',
+                    trace: []
+                };
+                for (var k = 0; k < traceCount; k++) e[i].trace[k] = { x: x, y: y };
+            }
+            var traceK = 0.4, timeDelta = 0.01;
+            var time = 0;
+            function loop() {
+                var n = -Math.cos(time);
+                pulse((1 + n) * 0.5, (1 + n) * 0.5);
+                time += ((Math.sin(time) < 0 ? 9 : (n > 0.8) ? 0.2 : 1)) * timeDelta;
+                ctx.fillStyle = 'rgba(0,0,0,.1)';
+                ctx.fillRect(0, 0, width, height);
+                for (i = e.length; i--;) {
+                    var u = e[i];
+                    var q = targetPoints[u.q];
+                    var dx = u.trace[0].x - q[0];
+                    var dy = u.trace[0].y - q[1];
+                    var length = Math.sqrt(dx * dx + dy * dy);
+                    if (10 > length) {
+                        if (0.95 < rand()) u.q = ~~(rand() * heartPointsCount);
+                        else {
+                            if (0.99 < rand()) u.D *= -1;
+                            u.q += u.D;
+                            u.q %= heartPointsCount;
+                            if (0 > u.q) u.q += heartPointsCount;
+                        }
+                    }
+                    u.vx += -dx / length * u.speed;
+                    u.vy += -dy / length * u.speed;
+                    u.trace[0].x += u.vx;
+                    u.trace[0].y += u.vy;
+                    u.vx *= u.force;
+                    u.vy *= u.force;
+                    for (k = 0; k < u.trace.length - 1;) {
+                        var T = u.trace[k];
+                        var N = u.trace[++k];
+                        N.x -= traceK * (N.x - T.x);
+                        N.y -= traceK * (N.y - T.y);
+                    }
+                    ctx.fillStyle = u.f;
+                    for (k = 0; k < u.trace.length; k++) {
+                        ctx.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
+                    }
+                }
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        async function startReasons() {
+            document.getElementById('scene2-after').style.display = 'none';
+            document.getElementById('intro-text').style.display = 'none';
+            document.getElementById('scene2-video-wrap').style.display = 'none';
+            document.getElementById('heart-animation-wrap').style.display = 'block';
+            document.getElementById('scene2-reasons').style.display = 'flex';
+            document.body.style.overflow = 'auto';
+            initHeartAnimation();
+            await typeInColumns();
+            await new Promise(function(r) { setTimeout(r, 5000); });
+            await showFinalScene();
+        }
+
+        async function showFinalScene() {
+            var overlay = document.getElementById('scene-final');
+            overlay.style.display = 'flex';
+            overlay.classList.remove('fully-dark');
+            document.getElementById('finalText').innerHTML = '';
+            overlay.offsetHeight;
+            requestAnimationFrame(function() {
+                overlay.classList.add('fully-dark');
+            });
+            await new Promise(function(r) { setTimeout(r, 1300); });
+            await typeSingleSentence('Кись..', 'finalText');
+            await new Promise(function(r) { setTimeout(r, 5000); });
+            document.getElementById('finalText').innerHTML += '<br><br>';
+            await typeAppend('я люблю тебя..', 'finalText', 40);
+        }
+
+        async function typeInColumns() {
+            var col1 = document.getElementById('col1');
+            var col2 = document.getElementById('col2');
+            var col3 = document.getElementById('col3');
+            var col4 = document.getElementById('col4');
+            col1.innerHTML = '';
+            col2.innerHTML = '';
+            col3.innerHTML = '';
+            col4.innerHTML = '';
+            var n = allReasons.length;
+            var perCol = Math.ceil(n / 4);
+            for (var i = 0; i < perCol; i++) {
+                var line1 = document.createElement('div');
+                var line2 = document.createElement('div');
+                var line3 = document.createElement('div');
+                var line4 = document.createElement('div');
+                col1.appendChild(line1);
+                col2.appendChild(line2);
+                col3.appendChild(line3);
+                col4.appendChild(line4);
+                var w1 = (allReasons[i] || "");
+                var w2 = (allReasons[perCol + i] || "");
+                var w3 = (allReasons[perCol * 2 + i] || "");
+                var w4 = (allReasons[perCol * 3 + i] || "");
+                await typeFour(w1, w2, w3, w4, line1, line2, line3, line4);
+                await new Promise(function(r) { setTimeout(r, 50); });
+            }
+        }
+
+        function typeFour(w1, w2, w3, w4, el1, el2, el3, el4) {
+            return new Promise(function(resolve) {
+                var index = 0;
+                var max = Math.max(w1.length, w2.length, w3.length, w4.length);
+                function step() {
+                    if (index < max) {
+                        if (index < w1.length) el1.innerHTML += w1[index];
+                        if (index < w2.length) el2.innerHTML += w2[index];
+                        if (index < w3.length) el3.innerHTML += w3[index];
+                        if (index < w4.length) el4.innerHTML += w4[index];
+                        index++;
+                        setTimeout(step, 28);
+                    } else resolve();
+                }
+                step();
+            });
+        }
+
+        function typeSingleSentence(text, elementId) {
+            return new Promise(resolve => {
+                let i = 0; const el = document.getElementById(elementId);
+                function step() {
+                    if (i < text.length) { el.innerHTML += text[i++]; setTimeout(step, 40); }
+                    else resolve();
+                }
+                step();
+            });
+        }
+
+        // При загрузке страницы — анимация печати первого вопроса
+        typeSingleSentence('Ты будешь моей валентинкой?', 'mainQuestion');
+    </script>
+</body>
+</html>
+
