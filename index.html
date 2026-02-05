@@ -6,7 +6,7 @@
     <title>любимому кисе</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;0,900;1,500&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0; padding: 0; background: #000000; color: #fff;
@@ -70,19 +70,25 @@
         }
 
         .btn {
-            font-family: 'Italiana', serif;
-            padding: 15px 30px; font-size: 1.2rem; background: #8b000080;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 900;
+            padding: 15px 30px; font-size: 1.25rem; background: #8b000080;
             color: #000; border: none; border-radius: 50px; cursor: pointer;
-            transition: transform 0.2s ease; letter-spacing: 0.12em;
+            transition: transform 0.2s ease; letter-spacing: 0.08em;
+            text-shadow: 0 0 1px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
+            -webkit-font-smoothing: antialiased;
         }
         .btn-yes-wrap .btn { background: linear-gradient(180deg, #8b000080 0%,#8b000080 100%); color: #000; }
         .btn:hover { transform: scale(1.05); }
 
         .btn-no {
-            font-family: 'Italiana', serif;
-            background: #0c0c0c; color: #000; letter-spacing: 0.12em;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 900;
+            background: #2a2a2a; color: #000; letter-spacing: 0.08em;
+            text-shadow: 0 0 1px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.4);
+            -webkit-font-smoothing: antialiased;
         }
-        .btn-no:hover { background: #555; color: #000; }
+        .btn-no:hover { background: #444; color: #000; }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -131,14 +137,17 @@
         #scene2-after .question { margin: 0; padding: 0 20px; }
         #btnAlways {
             display: none;
-            font-family: 'Italiana', serif;
-            font-size: 1.5rem; letter-spacing: 0.2em;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 900;
+            font-size: 1.45rem; letter-spacing: 0.15em;
             color: #000;
+            text-shadow: 0 0 1px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
+            -webkit-font-smoothing: antialiased;
             width: 160px; height: 145px;
             padding: 0;
             border: none; cursor: pointer;
             background: linear-gradient(145deg,#8b000080  0%, #8b000080 50%, #8b000080  100%);
-            box-shadow: 0 0 30px #8b000080 , inset 0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: 0 0 30px #8b000080 , inset 0 1px 0 rgba(0, 0, 0, 0.2);
             clip-path: path('M 80 135 C 80 135 0 95 0 55 C 0 22 35 0 80 35 C 125 0 160 22 160 55 C 160 95 80 135 80 135 Z');
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: heartBeat 1.2s ease-in-out infinite;
@@ -183,12 +192,18 @@
             text-shadow: 0 0 18px rgba(255, 77, 77, 0.35);
         }
         .columns {
-            display: flex; justify-content: center; gap: 48px; width: auto;
-            margin: 0 auto; flex-wrap: wrap;
+            display: flex; justify-content: center; gap: 48px; width: 100%;
+            margin: 0 auto; flex-wrap: nowrap; max-width: 520px;
+            box-sizing: border-box; padding: 0 12px;
         }
         .column {
-            width: 220px; text-align: left; font-size: 0.9rem; line-height: 1.2;
+            width: 220px; min-width: 0; flex-shrink: 1;
+            text-align: left; font-size: 0.9rem; line-height: 1.2;
             color: #ff6b6b;
+        }
+        @media (max-width: 520px) {
+            .columns { gap: 16px; padding: 0 8px; max-width: 100%; }
+            .column { width: calc(50% - 8px); font-size: 0.8rem; }
         }
 
         /* Финальная сцена: медленное затемнение, Кись.. и я люблю тебя.. + мутная анимация сердца */
@@ -295,21 +310,21 @@
         var allReasons = [
             "милый", "добрый", "нежный", "заботливый", "умный", "красивый", "весёлый", "надёжный",
             "честный", "ласковый", "внимательный", "тёплый", "искренний", "терпеливый", "щедрый", "верный",
-            "любящий", "родной", "особенный", "лучший", "идеальный", "драгоценный", "солнечный", "забавный",
+            "любящий", "родной", "особенный", "лучший", "сдержанный", "справедливый", "солнечный", "забавный",
             "остроумный", "талантливый", "чуткий", "отзывчивый", "благородный", "мужественный", "преданный",
             "открытый", "душевный", "неповторимый", "единственный", "понимающий", "романтичный", "смешной",
             "загадочный", "непредсказуемый", "сильный", "мечтательный", "решительный", "спокойный", "страстный",
-            "творческий", "мудрый", "лёгкий", "приятный", "обаятельный", "грациозный", "яркий", "светлый",
-            "чувственный", "галантный", "рыцарский", "мягкий", "настоящий", "живой", "редкий", "ценный",
+            "ценный", "мудрый", "лёгкий", "приятный", "обаятельный", "грациозный", "яркий", "светлый",
+            "чувственный", "находчивый", "невозмутимый", "мягкий", "настоящий", "живой", "редкий", "скромный",
             "любимый", "желанный", "нужный", "важный", "главный", "смелый", "независимый", "целеустремлённый",
             "добродушный", "лучезарный", "притягательный", "неотразимый", "поддерживающий", "вдохновляющий",
             "защитник", "опора", "друг", "партнёр", "вдохновение", "смысл", "радость", "счастье",
-            "мечта", "реальность", "бесценный", "незабываемый", "исключительный", "уникальный", "необычный",
-            "волшебный", "сказочный", "прекрасный", "изумительный", "восхитительный", "очаровательный",
-            "магнетический", "чарующий", "пленительный", "скромный", "великодушный", "бескорыстный",
-            "тактичный", "деликатный", "проницательный", "эрудированный", "находчивый", "оптимистичный",
-            "жизнерадостный", "задушевный", "сердечный", "трепетный", "неземной", "редчайший",
-            "уникальный", "необычный"
+            "мечта", "реальность", "бесценный", "незабываемый", "харизматичный", "уникальный", "необычный",
+            "необходимый", "человечный", "достойный", "прямолинейный", "уютный", "очаровательный",
+            "интересный", "чарующий", "пленительный", "стеснительный", "близкий", "бескорыстный",
+            "тактичный", "деликатный", "проницательный", "эрудированный", "ответственный", "оптимистичный",
+            "непоколебимый", "понятный", "бережный", "трепетный", "глубокий", "энергичный",
+            "серьезный", "необычный"
         ];
         allReasons = Array.from(new Set(allReasons)).slice(0, 100);
 
