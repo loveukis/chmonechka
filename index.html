@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's</title>
+    <title>любимому кисе</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0; padding: 0; background: #000000; color: #fff;
@@ -67,17 +70,19 @@
         }
 
         .btn {
+            font-family: 'Italiana', serif;
             padding: 15px 30px; font-size: 1.2rem; background: #8b000080;
             color: #000; border: none; border-radius: 50px; cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease; letter-spacing: 0.12em;
         }
-        .btn-yes-wrap .btn { background: linear-gradient(180deg, #8b000080 0%,#8b000080 100%); }
+        .btn-yes-wrap .btn { background: linear-gradient(180deg, #8b000080 0%,#8b000080 100%); color: #000; }
         .btn:hover { transform: scale(1.05); }
 
         .btn-no {
-            background: #0c0c0c; color: #000;
+            font-family: 'Italiana', serif;
+            background: #0c0c0c; color: #000; letter-spacing: 0.12em;
         }
-        .btn-no:hover { background: #555; }
+        .btn-no:hover { background: #555; color: #000; }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -124,9 +129,33 @@
         }
         #scene2-after.fully-dark { opacity: 1; }
         #scene2-after .question { margin: 0; padding: 0 20px; }
-        #scene2-after .btn { font-size: 1.3rem; padding: 16px 36px; color: #000; }
-        #btnAlways { display: none; }
-        #scene2-after #btnAlways.visible { display: inline-block; }
+        #btnAlways {
+            display: none;
+            font-family: 'Italiana', serif;
+            font-size: 1.5rem; letter-spacing: 0.2em;
+            color: #000;
+            width: 160px; height: 145px;
+            padding: 0;
+            border: none; cursor: pointer;
+            background: linear-gradient(145deg,#8b000080  0%, #8b000080 50%, #8b000080  100%);
+            box-shadow: 0 0 30px #8b000080 , inset 0 1px 0 rgba(255,255,255,0.2);
+            clip-path: path('M 80 135 C 80 135 0 95 0 55 C 0 22 35 0 80 35 C 125 0 160 22 160 55 C 160 95 80 135 80 135 Z');
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: heartBeat 1.2s ease-in-out infinite;
+        }
+        #scene2-after #btnAlways.visible { display: flex; align-items: center; justify-content: center; }
+        #btnAlways:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 45px rgba(220, 50, 50, 0.7), inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        #btnAlways:active { transform: scale(0.98); }
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.06); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.05); }
+            70% { transform: scale(1); }
+        }
 
         /* Фон: анимация сердечек (без мутности) */
         #heart-animation-wrap {
@@ -139,43 +168,50 @@
             background: transparent;
         }
 
-        /* 4 колонки — 100 причин по центру, скролл от браузера */
+        /* 2 колонки — 100 причин по центру, скролл без ползунка */
         #scene2-reasons {
             display: none; width: 100%; flex-direction: column; align-items: center;
             justify-content: flex-start; position: relative; z-index: 2; padding: 20px 0;
             box-sizing: border-box;
+            max-height: 100vh; overflow-y: auto; overflow-x: hidden;
+            scrollbar-width: none; -ms-overflow-style: none;
         }
+        #scene2-reasons::-webkit-scrollbar { display: none; }
         #scene2-reasons .reasons-title {
             font-size: 1.6rem; font-weight: 300; letter-spacing: 0.12em;
             color: #ff6b6b; margin-bottom: 28px; text-align: center;
             text-shadow: 0 0 18px rgba(255, 77, 77, 0.35);
         }
         .columns {
-            display: flex; justify-content: center; gap: 32px; width: auto;
+            display: flex; justify-content: center; gap: 48px; width: auto;
             margin: 0 auto; flex-wrap: wrap;
         }
         .column {
-            width: 140px; text-align: left; font-size: 0.9rem; line-height: 1.2;
+            width: 220px; text-align: left; font-size: 0.9rem; line-height: 1.2;
             color: #ff6b6b;
         }
 
-        /* Финальная сцена: медленное затемнение, Кись.. и я люблю тебя.. */
+        /* Финальная сцена: медленное затемнение, Кись.. и я люблю тебя.. + мутная анимация сердца */
         #scene-final {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; flex-direction: column; justify-content: center; align-items: center;
             z-index: 20; opacity: 0; transition: opacity 1.2s ease;
         }
         #scene-final.fully-dark { opacity: 1; }
-        #scene-final .question { margin: 0; padding: 0 20px; text-align: center; }
+        #scene-final .question { margin: 0; padding: 0 20px; text-align: center; position: relative; z-index: 2; }
+        #scene-final-bg {
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            z-index: 0; opacity: 0.85; filter: blur(1px); pointer-events: none;
+        }
+        #scene-final-bg canvas { display: block; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 
     <div id="blur-overlay"></div>
 
-    <!-- Музыка после видео (подставь свой файл в src) -->
+    <!-- Музыка после видео (подставь свой файл в src). preload для iOS -->
     <audio id="afterVideoMusic" preload="auto">
-        <!-- Подставь свою музыку: src="music.mp3" -->
         <source src="love.mp3" type="audio/mpeg">
     </audio>
 
@@ -209,14 +245,12 @@
                     <source src="2.mp4" type="video/mp4">
                 </video>
             </div>
-            <!-- После нажатия Always: 4 колонки со 100 причинами -->
+            <!-- После нажатия Always: 2 колонки со 100 причинами -->
             <div id="scene2-reasons">
                 <p class="reasons-title">100 причин почему именно ты</p>
                 <div class="columns" id="scroll-area">
                     <div id="col1" class="column"></div>
                     <div id="col2" class="column"></div>
-                    <div id="col3" class="column"></div>
-                    <div id="col4" class="column"></div>
                 </div>
             </div>
         </div>
@@ -227,8 +261,9 @@
         <canvas id="heartCanvas"></canvas>
     </div>
 
-    <!-- Финальная сцена после 4 колонок: затемнение, Кись.. и я люблю тебя.. -->
+    <!-- Финальная сцена после 2 колонок: затемнение, Кись.. и я люблю тебя.. + анимация сердца -->
     <div id="scene-final">
+        <div id="scene-final-bg"><canvas id="finalHeartCanvas"></canvas></div>
         <p class="question" id="finalText"></p>
     </div>
 
@@ -264,7 +299,7 @@
             "остроумный", "талантливый", "чуткий", "отзывчивый", "благородный", "мужественный", "преданный",
             "открытый", "душевный", "неповторимый", "единственный", "понимающий", "романтичный", "смешной",
             "загадочный", "непредсказуемый", "сильный", "мечтательный", "решительный", "спокойный", "страстный",
-            "творческий", "мудрый", "лёгкий", "искромётный", "обаятельный", "грациозный", "яркий", "прямой",
+            "творческий", "мудрый", "лёгкий", "приятный", "обаятельный", "грациозный", "яркий", "светлый",
             "чувственный", "галантный", "рыцарский", "мягкий", "настоящий", "живой", "редкий", "ценный",
             "любимый", "желанный", "нужный", "важный", "главный", "смелый", "независимый", "целеустремлённый",
             "добродушный", "лучезарный", "притягательный", "неотразимый", "поддерживающий", "вдохновляющий",
@@ -279,6 +314,16 @@
         allReasons = Array.from(new Set(allReasons)).slice(0, 100);
 
         async function startSequence() {
+            // Разблокировка аудио на iOS: воспроизведение разрешено только после жеста пользователя
+            var music = document.getElementById('afterVideoMusic');
+            if (music && music.querySelector('source').src) {
+                music.currentTime = 0;
+                var p = music.play();
+                if (p && p.then) {
+                    p.then(function() { music.pause(); music.currentTime = 0; }).catch(function() {});
+                }
+            }
+
             document.getElementById('scene1').style.display = 'none';
             document.getElementById('scene2').style.display = 'block';
             document.getElementById('blur-overlay').style.backdropFilter = "blur(15px)";
@@ -306,8 +351,9 @@
                 overlay.classList.add('fully-dark');
             });
             await new Promise(function(r) { setTimeout(r, 1300); });
-            if (music.querySelector('source').src) {
+            if (music && music.querySelector('source').src) {
                 music.currentTime = 0;
+                music.volume = 1;
                 music.play().catch(function() {});
             }
             await typeSingleSentence('Кись', 'scene2Question');
@@ -426,11 +472,75 @@
             document.getElementById('scene2-video-wrap').style.display = 'none';
             document.getElementById('heart-animation-wrap').style.display = 'block';
             document.getElementById('scene2-reasons').style.display = 'flex';
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = 'hidden';
             initHeartAnimation();
             await typeInColumns();
             await new Promise(function(r) { setTimeout(r, 5000); });
             await showFinalScene();
+        }
+
+        var finalHeartParticles = [];
+        var finalHeartAnimId = null;
+        function initFinalHeartAnimation() {
+            var canvas = document.getElementById('finalHeartCanvas');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            var particleCount = 3500;
+            function Particle() {
+                this.reset = function() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.px = this.x;
+                    this.py = this.y;
+                    var t = Math.random() * Math.PI * 2;
+                    var r = Math.sqrt(Math.random());
+                    var heartX = 16 * Math.pow(Math.sin(t), 3);
+                    var heartY = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+                    var scale = 15;
+                    this.targetX = (heartX * r * scale) + canvas.width / 2;
+                    this.targetY = (-heartY * r * scale) + canvas.height / 2;
+                    this.baseX = this.targetX;
+                    this.baseY = this.targetY;
+                    this.speed = Math.random() * 0.01 + 0.005;
+                    this.size = Math.random() * 1.2 + 0.2;
+                    var red = Math.floor(Math.random() * 120 + 80);
+                    this.color = 'rgba(' + red + ', 0, 10, ' + (Math.random() * 0.35 + 0.25) + ')';
+                };
+                this.reset();
+                this.update = function() {
+                    this.px = this.x;
+                    this.py = this.y;
+                    this.x += (this.targetX - this.x) * this.speed;
+                    this.y += (this.targetY - this.y) * this.speed;
+                    var time = Date.now() * 0.0015;
+                    this.targetX = this.baseX + Math.sin(time + this.x * 0.05) * 12;
+                    this.targetY = this.baseY + Math.cos(time + this.y * 0.05) * 12;
+                };
+                this.draw = function() {
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = this.size;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(this.px, this.py);
+                    ctx.lineTo(this.x, this.y);
+                    ctx.stroke();
+                };
+            }
+            finalHeartParticles = [];
+            for (var i = 0; i < particleCount; i++) finalHeartParticles.push(new Particle());
+            function animate() {
+                if (!canvas.parentElement || document.getElementById('scene-final').style.display !== 'flex') return;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                for (var i = 0; i < finalHeartParticles.length; i++) {
+                    finalHeartParticles[i].update();
+                    finalHeartParticles[i].draw();
+                }
+                finalHeartAnimId = requestAnimationFrame(animate);
+            }
+            animate();
         }
 
         async function showFinalScene() {
@@ -442,6 +552,7 @@
             requestAnimationFrame(function() {
                 overlay.classList.add('fully-dark');
             });
+            initFinalHeartAnimation();
             await new Promise(function(r) { setTimeout(r, 1300); });
             await typeSingleSentence('Кись..', 'finalText');
             await new Promise(function(r) { setTimeout(r, 5000); });
@@ -452,42 +563,30 @@
         async function typeInColumns() {
             var col1 = document.getElementById('col1');
             var col2 = document.getElementById('col2');
-            var col3 = document.getElementById('col3');
-            var col4 = document.getElementById('col4');
             col1.innerHTML = '';
             col2.innerHTML = '';
-            col3.innerHTML = '';
-            col4.innerHTML = '';
             var n = allReasons.length;
-            var perCol = Math.ceil(n / 4);
+            var perCol = Math.ceil(n / 2);
             for (var i = 0; i < perCol; i++) {
                 var line1 = document.createElement('div');
                 var line2 = document.createElement('div');
-                var line3 = document.createElement('div');
-                var line4 = document.createElement('div');
                 col1.appendChild(line1);
                 col2.appendChild(line2);
-                col3.appendChild(line3);
-                col4.appendChild(line4);
                 var w1 = (allReasons[i] || "");
                 var w2 = (allReasons[perCol + i] || "");
-                var w3 = (allReasons[perCol * 2 + i] || "");
-                var w4 = (allReasons[perCol * 3 + i] || "");
-                await typeFour(w1, w2, w3, w4, line1, line2, line3, line4);
+                await typeTwo(w1, w2, line1, line2);
                 await new Promise(function(r) { setTimeout(r, 50); });
             }
         }
 
-        function typeFour(w1, w2, w3, w4, el1, el2, el3, el4) {
+        function typeTwo(w1, w2, el1, el2) {
             return new Promise(function(resolve) {
                 var index = 0;
-                var max = Math.max(w1.length, w2.length, w3.length, w4.length);
+                var max = Math.max(w1.length, w2.length);
                 function step() {
                     if (index < max) {
                         if (index < w1.length) el1.innerHTML += w1[index];
                         if (index < w2.length) el2.innerHTML += w2[index];
-                        if (index < w3.length) el3.innerHTML += w3[index];
-                        if (index < w4.length) el4.innerHTML += w4[index];
                         index++;
                         setTimeout(step, 28);
                     } else resolve();
